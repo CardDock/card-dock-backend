@@ -6,7 +6,21 @@ export default [
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.{ts}'],
+    files: ['scripts/**'],
+    languageOptions: { globals: globals.node },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['test/**'],
+    languageOptions: { globals: globals.node },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['src/*.ts'],
     languageOptions: { globals: globals.browser },
     rules: {
       semi: 'error', // Requiere punto y coma al final de las sentencias
@@ -43,20 +57,6 @@ export default [
         },
       ],
       'no-process-exit': 'off', // Desactiva la regla que prohíbe el uso de process.exit()
-    },
-  },
-  {
-    files: ['scripts/**'],
-    languageOptions: { globals: globals.node },
-    rules: {
-      'no-console': 'off',
-    },
-  },
-  {
-    files: ['tests/**'],
-    languageOptions: { globals: globals.node },
-    rules: {
-      'no-console': 'off',
     },
   },
   {
@@ -101,6 +101,9 @@ export default [
       // System files
       '.DS_Store',
       'Thumbs.db',
+
+      // scripts
+      'scripts/*',
     ],
   },
 ];
