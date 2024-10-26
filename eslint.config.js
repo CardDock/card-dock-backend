@@ -1,81 +1,106 @@
-import typescriptEslintPlugin from '@typescript-eslint/eslint-plugin';
-import prettierPlugin from 'eslint-plugin-prettier';
-import nestjsPlugin from 'eslint-plugin-nestjs';
-import unicornPlugin from 'eslint-plugin-unicorn';
-import nodePlugin from 'eslint-plugin-node';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import pluginJs from '@eslint/js';
 
 export default [
+  pluginJs.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    languageOptions: {
-      parser: '@typescript-eslint/parser',
-      parserOptions: {
-        project: 'tsconfig.json',
-        tsconfigRootDir: __dirname,
-        sourceType: 'module',
-      },
-    },
-    plugins: {
-      '@typescript-eslint': typescriptEslintPlugin,
-      prettier: prettierPlugin,
-      nestjs: nestjsPlugin,
-      unicorn: unicornPlugin,
-      node: nodePlugin,
-    },
-    extends: [
-      'plugin:@typescript-eslint/recommended',
-      'plugin:prettier/recommended',
-      'plugin:nestjs/recommended',
-      'plugin:unicorn/recommended',
-      'plugin:node/recommended',
-    ],
-    root: true,
-    env: {
-      node: true,
-      jest: true,
-    },
-    ignorePatterns: ['.eslintrc.js', 'dist/', 'coverage/', 'node_modules/'],
+    files: ['**/*.{ts}'],
+    languageOptions: { globals: globals.browser },
     rules: {
-      '@typescript-eslint/interface-name-prefix': 'off', // Desactiva el prefijo de nombre de interfaz
-      '@typescript-eslint/explicit-function-return-type': 'error', // Requiere que las funciones tengan un tipo de retorno explícito
-      '@typescript-eslint/explicit-module-boundary-types': 'error', // Requiere que los tipos de los límites del módulo sean explícitos
-      '@typescript-eslint/no-explicit-any': 'error', // Prohíbe el uso de 'any' explícito
-      'nestjs/use-validation-pipe': 'error', // Requiere el uso de ValidationPipe en NestJS
-      'nestjs/use-logger': 'error', // Requiere el uso de Logger en NestJS
-      'no-console': ['error', { allow: ['warn', 'error'] }], // Prohíbe el uso de console.log, permite console.warn y console.error
-      'simple-import-sort/imports': 'error', // Requiere la ordenación simple de las importaciones
-      'simple-import-sort/exports': 'error', // Requiere la ordenación simple de las exportaciones
-      'unicorn/prefer-module': 'off', // Desactiva la preferencia por módulos en lugar de CommonJS
-      'unicorn/prefer-top-level-await': 'off', // Desactiva la preferencia por await a nivel superior
-      'unicorn/prevent-abbreviations': 'off', // Desactiva la prevención de abreviaciones
-      'node/no-missing-import': 'off', // Desactiva la regla que prohíbe importaciones faltantes en Node.js
-      'node/no-unsupported-features/es-syntax': [
-        'error',
-        { ignores: ['modules'] },
-      ], // Requiere que las características de sintaxis de ES no soportadas sean ignoradas
-      'node/no-unpublished-import': 'off', // Desactiva la regla que prohíbe importaciones no publicadas en Node.js
-      'no-process-exit': 'off', // Desactiva la regla que prohíbe el uso de process.exit()
-      'no-unused-vars': 'error', // Prohíbe variables no utilizadas
-      'no-var': 'error', // Prefiere let/const sobre var
-      'prefer-const': 'error', // Prefiere const si la variable no se reasigna
+      semi: 'error', // Requiere punto y coma al final de las sentencias
+      'prefer-const': 'error', // Sugiere usar `const` para variables que nunca se reasignan
+      'no-unused-vars': 'error', // Advierte sobre variables declaradas pero no utilizadas
       eqeqeq: ['error', 'always'], // Requiere el uso de === y !== en lugar de == y !=
-      curly: 'error', // Requiere llaves para todos los bloques
-      'no-multi-spaces': 'error', // Evita múltiples espacios
-      'no-trailing-spaces': 'error', // Evita espacios en blanco al final de las líneas
-      'eol-last': ['error', 'always'], // Requiere una nueva línea al final del archivo
-    },
-    overrides: [
-      {
-        files: ['scripts/**'],
-        rules: {
-          'no-console': 'off',
+      'no-console': 'error', // Advierte sobre el uso de console.log()
+      curly: ['error', 'multi-line'], // Requiere llaves para bloques multilínea
+      'brace-style': ['error', '1tbs', { allowSingleLine: true }], // Estilo de llaves "one true brace style"
+      'array-callback-return': 'warn', // Asegura que los callbacks de métodos de array retornen un valor
+      'default-case': 'error', // Requiere una cláusula `default` en los `switch`
+      'dot-notation': 'error', // Prefiere la notación de punto sobre la de corchetes para acceder a propiedades
+      'no-empty-function': 'warn', // Advierte sobre funciones vacías
+      'no-multi-spaces': 'error', // Prohíbe múltiples espacios en blanco
+      'no-redeclare': 'error', // Prohíbe redeclarar variables
+      'no-shadow': 'warn', // Advierte sobre declaraciones de variables en un ámbito externo
+      'no-undef': 'error', // Prohíbe el uso de variables no declaradas
+      'no-unreachable': 'error', // Prohíbe código inalcanzable
+      'no-var': 'error', // Requiere let o const en lugar de var
+      'prefer-arrow-callback': 'warn', // Sugiere usar arrow functions como callbacks
+      quotes: [
+        'error',
+        'single',
+        { avoidEscape: true, allowTemplateLiterals: true },
+      ],
+      'comma-dangle': [
+        'error',
+        {
+          arrays: 'always-multiline',
+          objects: 'always-multiline',
+          imports: 'always-multiline',
+          exports: 'always-multiline',
+          functions: 'always-multiline',
         },
-      },
-      {
-        files: ['tests/**'],
-      },
-    ],
-    env: {
-      node: true,
+      ],
+      'no-process-exit': 'off', // Desactiva la regla que prohíbe el uso de process.exit()
     },
+  },
+  {
+    files: ['scripts/**'],
+    languageOptions: { globals: globals.node },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    files: ['tests/**'],
+    languageOptions: { globals: globals.node },
+    rules: {
+      'no-console': 'off',
+    },
+  },
+  {
+    ignores: [
+      // Compiled output
+      '/dist',
+      '/tmp',
+      '/out-tsc',
+      '/bazel-out',
+
+      // Node
+      '/node_modules',
+      'npm-debug.log',
+      'yarn-error.log',
+
+      // IDEs and editors
+      '.idea/',
+      '.project',
+      '.classpath',
+      '.c9/',
+      '*.launch',
+      '.settings/',
+
+      // Visual Studio Code
+      '.vscode/*',
+      '!.vscode/settings.json',
+      '!.vscode/tasks.json',
+      '!.vscode/launch.json',
+      '!.vscode/extensions.json',
+      '.history/*',
+
+      // Miscellaneous
+      '.angular/*',
+      '.sass-cache/*',
+      '/connect.lock',
+      '/coverage',
+      '/tests/coverage',
+      '/libpeerconnection.log',
+      'testem.log',
+      '/typings',
+
+      // System files
+      '.DS_Store',
+      'Thumbs.db',
+    ],
   },
 ];
