@@ -37,15 +37,17 @@ model AuthProvider {
 }
 
 model UserProfile {
-  id        Int       @id @default(autoincrement())
-  userId    Int       @unique
-  countryId Int
-  cityId    Int
-  birthdate DateTime?
-  bio       String?
-  user      User      @relation(fields: [userId], references: [id])
-  country   Country   @relation(fields: [countryId], references: [id])
-  city      City      @relation(fields: [cityId], references: [id])
+  id            Int       @id @default(autoincrement())
+  userId        Int       @unique
+  countryId     Int
+  cityId        Int
+  birthdate     DateTime?
+  bio           String?
+  portraitUser  String?
+  landscapeUser String?
+  user          User      @relation(fields: [userId], references: [id])
+  country       Country   @relation(fields: [countryId], references: [id])
+  city          City      @relation(fields: [cityId], references: [id])
 }
 
 model Country {
