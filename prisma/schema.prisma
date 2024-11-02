@@ -64,8 +64,8 @@ model City {
   name        String
   countryId   Int
   isActive    Boolean       @default(true)
-  country     Country       @relation(fields: [countryId], references: [id])
   UserProfile UserProfile[]
+  country     Country       @relation(fields: [countryId], references: [id])
 }
 
 enum Provider {
