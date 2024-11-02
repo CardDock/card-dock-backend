@@ -20,6 +20,8 @@ model User {
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   authProviders AuthProvider[]
+  UserProfile   UserProfile[]
+  profileId     Int?
 
   @@index([email])
 }
@@ -32,6 +34,36 @@ model AuthProvider {
   user       User?    @relation(fields: [userId], references: [id])
 
   @@index([providerId])
+}
+
+model UserProfile {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  countryId Int
+  cityId    Int
+  birthdate DateTime?
+  bio       String?
+  user      User      @relation(fields: [userId], references: [id])
+  country   Country   @relation(fields: [countryId], references: [id])
+  city      City      @relation(fields: [cityId], references: [id])
+}
+
+model Country {
+  id          Int           @id @default(autoincrement())
+  code        String        @unique
+  name        String
+  cities      City[]
+  isActive    Boolean       @default(true)
+  UserProfile UserProfile[]
+}
+
+model City {
+  id          Int           @id @default(autoincrement())
+  name        String
+  countryId   Int
+  isActive    Boolean       @default(true)
+  country     Country       @relation(fields: [countryId], references: [id])
+  UserProfile UserProfile[]
 }
 
 enum Provider {
