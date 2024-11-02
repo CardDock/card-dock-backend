@@ -21,7 +21,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "prepare": "husky"
+    "prepare": "husky",
+		"prisma:migrate-only": "pnpx prisma migrate dev --create-only",
+		"prisma:push": "pnpx prisma db push",
+		"prisma:seed": "pnpx tsx prisma/seed/seed.ts",
+		"prisma:dev": "pnpm prisma:push && pnpm prisma:seed"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -30,6 +34,9 @@
     "@prisma/client": "5.21.1",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1"
+  },
+  "prisma": {
+    "seed": "pnpx tsx prisma/seed/seed.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
