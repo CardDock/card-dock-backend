@@ -46,6 +46,7 @@ model UserProfile {
   bio           String?
   portraitUser  String?
   landscapeUser String?
+  language      Language  @default(SPANISH)
   user          User      @relation(fields: [userId], references: [id])
   country       Country   @relation(fields: [countryId], references: [id])
   city          City      @relation(fields: [cityId], references: [id])
@@ -78,4 +79,9 @@ enum Role {
   USER
   PROFESSIONAL
   ADMIN
+}
+
+enum Language {
+  SPANISH
+  ENGLISH
 }
