@@ -22,7 +22,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "prepare": "husky",
-		"prisma:migrate-only": "pnpx prisma migrate dev --create-only",
+		"prisma:migrate": "pnpx prisma migrate dev",
+		"prisma:migrate-only": "pnpm prisma:migrate -- --create-only",
 		"prisma:push": "pnpx prisma db push",
 		"prisma:seed": "pnpx tsx prisma/seed/seed.ts",
 		"prisma:dev": "pnpm prisma:push && pnpm prisma:seed"
