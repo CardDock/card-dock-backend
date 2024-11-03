@@ -14,25 +14,30 @@ datasource db {
 }
 
 model User {
-  id            Int            @id @default(autoincrement())
-  name          String
-  email         String         @unique
-  role          Role           @default(USER)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-  authProviders AuthProvider[]
-  UserProfile   UserProfile[]
-  profileId     Int?
+  id              Int               @id @default(autoincrement())
+  name            String
+  email           String            @unique
+  role            Role              @default(USER)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  lastLogin       DateTime?
+  isActive        Boolean           @default(true)
+  verified        Boolean           @default(false)
+  authProviders   AuthProvider[]
+  UserProfile     UserProfile[]
+  profileId       Int?
+  UserPreferences UserPreferences[]
 
   @@index([email])
 }
 
 model AuthProvider {
-  id         Int      @id @default(autoincrement())
-  provider   Provider
-  providerId String //identificador del usuario proporcionado por el proveedor de autenticación
-  userId     Int?
-  user       User?    @relation(fields: [userId], references: [id])
+  id           Int      @id @default(autoincrement())
+  provider     Provider
+  passwordHash String?
+  providerId   String //identificador del usuario proporcionado por el proveedor de autenticación
+  userId       Int?
+  user         User?    @relation(fields: [userId], references: [id])
 
   @@index([providerId])
 }
@@ -46,10 +51,17 @@ model UserProfile {
   bio           String?
   portraitUser  String?
   landscapeUser String?
-  language      Language  @default(SPANISH)
   user          User      @relation(fields: [userId], references: [id])
   country       Country   @relation(fields: [countryId], references: [id])
   city          City      @relation(fields: [cityId], references: [id])
+}
+
+model UserPreferences {
+  id            Int      @id @default(autoincrement())
+  language      Language @default(SPANISH)
+  notifications Boolean  @default(true)
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
 }
 
 model Country {
