@@ -43,8 +43,8 @@ model AuthProvider {
 }
 
 model UserProfile {
-  id            Int       @id @default(autoincrement())
-  userId        Int       @unique
+  id            Int           @id @default(autoincrement())
+  userId        Int           @unique
   countryId     Int
   cityId        Int
   birthdate     DateTime?
@@ -53,9 +53,8 @@ model UserProfile {
   landscapeUser String?
   contactEmail  String?
   contactPhone  String?
-  user          User      @relation(fields: [userId], references: [id])
-  country       Country   @relation(fields: [countryId], references: [id])
-  city          City      @relation(fields: [cityId], references: [id])
+  UserAddress   UserAddress[]
+  user          User          @relation(fields: [userId], references: [id])
 }
 
 model UserPreferences {
@@ -66,22 +65,37 @@ model UserPreferences {
   user          User     @relation(fields: [userId], references: [id])
 }
 
+model UserAddress {
+  id            Int          @id @default(autoincrement())
+  street        String?
+  dirComplement String?
+  state         String?
+  postalCode    String?
+  profileId     Int
+  countryId     Int
+  cityId        Int
+  userProfileId Int?
+  country       Country      @relation(fields: [countryId], references: [id])
+  city          City         @relation(fields: [cityId], references: [id])
+  UserProfile   UserProfile? @relation(fields: [userProfileId], references: [id])
+}
+
 model Country {
   id          Int           @id @default(autoincrement())
   code        String        @unique
   name        String
   cities      City[]
   isActive    Boolean       @default(true)
-  UserProfile UserProfile[]
+  UserAddress UserAddress[]
 }
 
 model City {
-  id          Int           @id @default(autoincrement())
-  name        String
-  countryId   Int
-  isActive    Boolean       @default(true)
-  UserProfile UserProfile[]
-  country     Country       @relation(fields: [countryId], references: [id])
+  id        Int           @id @default(autoincrement())
+  name      String
+  countryId Int
+  isActive  Boolean       @default(true)
+  Address   UserAddress[]
+  country   Country       @relation(fields: [countryId], references: [id])
 }
 
 enum Provider {
