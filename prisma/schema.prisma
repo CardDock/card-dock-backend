@@ -135,13 +135,18 @@ model UserCollection {
   cardId             Int
   userId             Int
   userCardProperties UserCardProperties[]
+  createAt           DateTime             @default(now())
+  updateAt           DateTime             @updatedAt
   Card               Card                 @relation(fields: [cardId], references: [id])
   User               User                 @relation(fields: [userId], references: [id])
 }
 
 model UserCardProperties {
   id               Int             @id @default(autoincrement())
+  condition        CardCondition
+  rarity           String?
   userCollectionId Int
+  updateAt         DateTime        @updatedAt
   UserCollection   UserCollection? @relation(fields: [userCollectionId], references: [id])
 }
 
@@ -155,4 +160,14 @@ enum CardSet {
   DIGIMONC
   STAR_WARS_DESTINY
   STAR_WARS_UNLIMITED
+}
+
+enum CardCondition {
+  MINT
+  NEAR_MINT
+  EXCELLENT
+  GOOD
+  LIGHT_PLAYED
+  PLAYED
+  POOR
 }
