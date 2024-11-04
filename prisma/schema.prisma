@@ -27,6 +27,7 @@ model User {
   UserProfile     UserProfile[]
   profileId       Int?
   UserPreferences UserPreferences[]
+  UserCollection  UserCollection[]
 
   @@index([email])
 }
@@ -112,4 +113,46 @@ enum Role {
 enum Language {
   SPANISH
   ENGLISH
+}
+
+// Modelo para las cartas
+
+model Card {
+  id          Int              @id @default(autoincrement())
+  set         CardSet
+  apiId       String           @unique
+  name        String?
+  apiData     Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  collections UserCollection[]
+
+  @@index([set, apiId, name, apiData])
+}
+
+model UserCollection {
+  id                 Int                  @id @default(autoincrement())
+  cardId             Int
+  userId             Int
+  userCardProperties UserCardProperties[]
+  Card               Card                 @relation(fields: [cardId], references: [id])
+  User               User                 @relation(fields: [userId], references: [id])
+}
+
+model UserCardProperties {
+  id               Int             @id @default(autoincrement())
+  userCollectionId Int
+  UserCollection   UserCollection? @relation(fields: [userCollectionId], references: [id])
+}
+
+enum CardSet {
+  MAGIC
+  POKEMON
+  YUGIOH
+  LORCANA
+  DRAGON_BALL_SUPER
+  ONE_PIECE
+  DIGIMONC
+  STAR_WARS_DESTINY
+  STAR_WARS_UNLIMITED
 }
