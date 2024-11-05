@@ -144,6 +144,7 @@ model UserCollection {
   Card               Card                 @relation(fields: [cardId], references: [id])
   User               User                 @relation(fields: [userId], references: [id])
   Deck               Deck?                @relation(fields: [deckId], references: [id])
+  TradeCard          TradeCard[]
 }
 
 model UserCardProperties {
@@ -169,9 +170,6 @@ model Deck {
 }
 
 // * Cartas que el usuario necesita
-// * con esto podemos saber que cartas
-// * buscarle al usuario entre las cartas
-// * que tienen el resto de los usuarios
 model WantedCard {
   id        Int            @id @default(autoincrement())
   cardId    Int
@@ -182,6 +180,18 @@ model WantedCard {
   updateAt  DateTime       @updatedAt
   User      User           @relation(fields: [userId], references: [id])
   Card      Card           @relation(fields: [cardId], references: [id])
+}
+
+// * Cartas que el usuario tiene para cambiar
+model TradeCard {
+  id               Int            @id @default(autoincrement())
+  userId           Int
+  userCollectionId Int
+  condition        CardCondition?
+  minRating        String?
+  createAt         DateTime       @default(now())
+  updateAt         DateTime       @updatedAt
+  collectionId     UserCollection @relation(fields: [userCollectionId], references: [id])
 }
 
 // * Definir enums
