@@ -13,6 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/// * Usuario y autenticacion
 model User {
   id              Int                 @id @default(autoincrement())
   name            String
@@ -29,6 +30,7 @@ model User {
   profileId       Int?
   UserPreferences UserPreferences[]
   UserCollection  UserCollection[]
+  Deck            Deck[]
 
   @@index([email])
 }
@@ -44,6 +46,27 @@ model AuthProvider {
   @@index([providerId])
 }
 
+// * Preferencias de usuario
+model UserPreferences {
+  id            Int      @id @default(autoincrement())
+  language      Language @default(SPANISH)
+  notifications Boolean  @default(true)
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+// ==== Notificaciones de usuario ====
+model UserNotifications {
+  id        Int              @id @default(autoincrement())
+  userId    Int
+  content   String
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+  User      User             @relation(fields: [userId], references: [id])
+}
+
+// * Perfil de usuario
 model UserProfile {
   id            Int           @id @default(autoincrement())
   userId        Int           @unique
@@ -59,14 +82,7 @@ model UserProfile {
   user          User          @relation(fields: [userId], references: [id])
 }
 
-model UserPreferences {
-  id            Int      @id @default(autoincrement())
-  language      Language @default(SPANISH)
-  notifications Boolean  @default(true)
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id])
-}
-
+// * Direcciones de usuario
 model UserAddress {
   id            Int          @id @default(autoincrement())
   street        String?
@@ -100,16 +116,60 @@ model City {
   country   Country       @relation(fields: [countryId], references: [id])
 }
 
-model UserNotifications {
-  id        Int              @id @default(autoincrement())
-  userId    Int
-  content   String
-  type      NotificationType
-  isRead    Boolean          @default(false)
-  createdAt DateTime         @default(now())
-  User      User             @relation(fields: [userId], references: [id])
+// * Info externa de las cartas (cache)
+model Card {
+  id          Int              @id @default(autoincrement())
+  set         CardSet
+  apiId       String           @unique
+  name        String?
+  apiData     Json?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  collections UserCollection[]
+
+  @@index([set, apiId, name, apiData])
 }
 
+// * Cartas de un usuario
+model UserCollection {
+  id                 Int                  @id @default(autoincrement())
+  cardId             Int
+  userId             Int
+  userCardProperties UserCardProperties[]
+  createAt           DateTime             @default(now())
+  updateAt           DateTime             @updatedAt
+  deckId             Int? // Este campo será opcional para cartas sueltas
+  Card               Card                 @relation(fields: [cardId], references: [id])
+  User               User                 @relation(fields: [userId], references: [id])
+  Deck               Deck?                @relation(fields: [deckId], references: [id])
+}
+
+model UserCardProperties {
+  id               Int             @id @default(autoincrement())
+  condition        CardCondition
+  rarity           String?
+  isPublic         Boolean         @default(true)
+  userCollectionId Int
+  updateAt         DateTime        @updatedAt
+  UserCollection   UserCollection? @relation(fields: [userCollectionId], references: [id])
+}
+
+model Deck {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String?
+  userId         Int
+  isPublic       Boolean          @default(true)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  user           User             @relation(fields: [userId], references: [id])
+  UserCollection UserCollection[]
+}
+
+// * Cartas que el usuario necesita
+// * con esto podemos saber que cartas buscarle al usuario entre las cartas que tienen el resto de los usuarios
+
+// * Definir enum
 enum Provider {
   GOOGLE
   FACEBOOK
@@ -130,41 +190,6 @@ enum NotificationType {
   INFO // Mensaje informativo
   ALERT // Mensaje de alerta
   REMINDER // Recordatorio
-}
-
-// Modelo para las cartas
-
-model Card {
-  id          Int              @id @default(autoincrement())
-  set         CardSet
-  apiId       String           @unique
-  name        String?
-  apiData     Json?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  collections UserCollection[]
-
-  @@index([set, apiId, name, apiData])
-}
-
-model UserCollection {
-  id                 Int                  @id @default(autoincrement())
-  cardId             Int
-  userId             Int
-  userCardProperties UserCardProperties[]
-  createAt           DateTime             @default(now())
-  updateAt           DateTime             @updatedAt
-  Card               Card                 @relation(fields: [cardId], references: [id])
-  User               User                 @relation(fields: [userId], references: [id])
-}
-
-model UserCardProperties {
-  id               Int             @id @default(autoincrement())
-  condition        CardCondition
-  rarity           String?
-  userCollectionId Int
-  updateAt         DateTime        @updatedAt
-  UserCollection   UserCollection? @relation(fields: [userCollectionId], references: [id])
 }
 
 enum CardSet {
@@ -188,3 +213,5 @@ enum CardCondition {
   PLAYED
   POOR
 }
+
+// * Fin Enum
