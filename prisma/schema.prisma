@@ -31,6 +31,7 @@ model User {
   UserPreferences UserPreferences[]
   UserCollection  UserCollection[]
   Deck            Deck[]
+  UserWishList    WantedCard[]
 
   @@index([email])
 }
@@ -118,14 +119,15 @@ model City {
 
 // * Info externa de las cartas (cache)
 model Card {
-  id          Int              @id @default(autoincrement())
-  set         CardSet
-  apiId       String           @unique
-  name        String?
-  apiData     Json?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  collections UserCollection[]
+  id           Int              @id @default(autoincrement())
+  set          CardSet
+  apiId        String           @unique
+  name         String?
+  apiData      Json?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  collections  UserCollection[]
+  UserWishList WantedCard[]
 
   @@index([set, apiId, name, apiData])
 }
@@ -167,9 +169,22 @@ model Deck {
 }
 
 // * Cartas que el usuario necesita
-// * con esto podemos saber que cartas buscarle al usuario entre las cartas que tienen el resto de los usuarios
+// * con esto podemos saber que cartas
+// * buscarle al usuario entre las cartas
+// * que tienen el resto de los usuarios
+model WantedCard {
+  id        Int            @id @default(autoincrement())
+  cardId    Int
+  userId    Int
+  condition CardCondition?
+  minRating String
+  createAt  DateTime       @default(now())
+  updateAt  DateTime       @updatedAt
+  User      User           @relation(fields: [userId], references: [id])
+  Card      Card           @relation(fields: [cardId], references: [id])
+}
 
-// * Definir enum
+// * Definir enums
 enum Provider {
   GOOGLE
   FACEBOOK
