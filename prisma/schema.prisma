@@ -15,21 +15,21 @@ datasource db {
 
 /// * Usuario y autenticacion
 model User {
-  id              Int                 @id @default(autoincrement())
+  id              Int                  @id @default(autoincrement())
   name            String
-  email           String              @unique
-  role            Role                @default(USER)
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
+  email           String               @unique
+  role            Role                 @default(USER)
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
   lastLogin       DateTime?
-  isActive        Boolean             @default(true)
-  verified        Boolean             @default(false)
+  isActive        Boolean              @default(true)
+  verified        Boolean              @default(false)
   notifications   UserNotifications[]
   authProviders   AuthProvider[]
   UserProfile     UserProfile[]
   profileId       Int?
   UserPreferences UserPreferences[]
-  UserCollection  UserCollection[]
+  UserCollection  CardUserCollection[]
   Deck            Deck[]
   UserWishList    WantedCard[]
 
@@ -119,25 +119,25 @@ model City {
 
 // * Info externa de las cartas (cache)
 model Card {
-  id           Int              @id @default(autoincrement())
+  id           Int                  @id @default(autoincrement())
   set          CardSet
-  apiId        String           @unique
+  apiId        String               @unique
   name         String?
   apiData      Json?
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  collections  UserCollection[]
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+  collections  CardUserCollection[]
   UserWishList WantedCard[]
 
   @@index([set, apiId, name, apiData])
 }
 
 // * Cartas de un usuario
-model UserCollection {
+model CardUserCollection {
   id                 Int                  @id @default(autoincrement())
   cardId             Int
   userId             Int
-  userCardProperties UserCardProperties[]
+  CardUserProperties CardUserProperties[]
   createAt           DateTime             @default(now())
   updateAt           DateTime             @updatedAt
   deckId             Int? // Este campo será opcional para cartas sueltas
@@ -145,28 +145,39 @@ model UserCollection {
   User               User                 @relation(fields: [userId], references: [id])
   Deck               Deck?                @relation(fields: [deckId], references: [id])
   TradeCard          TradeCard[]
+  photos             CardRealPhoto[]
 }
 
-model UserCardProperties {
-  id               Int             @id @default(autoincrement())
+model CardRealPhoto {
+  id               Int                 @id @default(autoincrement())
+  photoUrl         String
+  description      String?
+  uploadedAt       DateTime            @default(now())
+  updateAt         DateTime            @updatedAt
+  UserCollection   CardUserCollection? @relation(fields: [userCollectionId], references: [id])
+  userCollectionId Int?
+}
+
+model CardUserProperties {
+  id               Int                 @id @default(autoincrement())
   condition        CardCondition
   rarity           String?
-  isPublic         Boolean         @default(true)
+  isPublic         Boolean             @default(true)
   userCollectionId Int
-  updateAt         DateTime        @updatedAt
-  UserCollection   UserCollection? @relation(fields: [userCollectionId], references: [id])
+  updateAt         DateTime            @updatedAt
+  UserCollection   CardUserCollection? @relation(fields: [userCollectionId], references: [id])
 }
 
 model Deck {
-  id             Int              @id @default(autoincrement())
+  id             Int                  @id @default(autoincrement())
   name           String
   description    String?
   userId         Int
-  isPublic       Boolean          @default(true)
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  user           User             @relation(fields: [userId], references: [id])
-  UserCollection UserCollection[]
+  isPublic       Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  user           User                 @relation(fields: [userId], references: [id])
+  UserCollection CardUserCollection[]
 }
 
 // * Cartas que el usuario necesita
@@ -184,17 +195,20 @@ model WantedCard {
 
 // * Cartas que el usuario tiene para cambiar
 model TradeCard {
-  id               Int            @id @default(autoincrement())
+  id               Int                @id @default(autoincrement())
   userId           Int
   userCollectionId Int
   condition        CardCondition?
   minRating        String?
-  createAt         DateTime       @default(now())
-  updateAt         DateTime       @updatedAt
-  collectionId     UserCollection @relation(fields: [userCollectionId], references: [id])
+  createAt         DateTime           @default(now())
+  updateAt         DateTime           @updatedAt
+  collectionId     CardUserCollection @relation(fields: [userCollectionId], references: [id])
 }
 
+// * -------------
 // * Definir enums
+// * -------------
+
 enum Provider {
   GOOGLE
   FACEBOOK
