@@ -15,23 +15,24 @@ datasource db {
 
 /// * Usuario y autenticacion
 model User {
-  id              Int                  @id @default(autoincrement())
-  name            String
-  email           String               @unique
-  role            Role                 @default(USER)
-  createdAt       DateTime             @default(now())
-  updatedAt       DateTime             @updatedAt
-  lastLogin       DateTime?
-  isActive        Boolean              @default(true)
-  verified        Boolean              @default(false)
-  notifications   UserNotifications[]
-  authProviders   AuthProvider[]
-  UserProfile     UserProfile[]
-  profileId       Int?
-  UserPreferences UserPreferences[]
-  UserCollection  CardUserCollection[]
-  Deck            Deck[]
-  UserWishList    WantedCard[]
+  id               Int                  @id @default(autoincrement())
+  name             String
+  email            String               @unique
+  role             Role                 @default(USER)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  lastLogin        DateTime?
+  isActive         Boolean              @default(true)
+  verified         Boolean              @default(false)
+  notifications    UserNotifications[]
+  authProviders    AuthProvider[]
+  UserProfile      UserProfile[]
+  profileId        Int?
+  UserPreferences  UserPreferences[]
+  UserCollection   CardUserCollection[]
+  Deck             Deck[]
+  UserWishList     WantedCard[]
+  CardUserFavorite CardUserFavorite[]
 
   @@index([email])
 }
@@ -146,6 +147,7 @@ model CardUserCollection {
   Deck               Deck?                @relation(fields: [deckId], references: [id])
   TradeCard          TradeCard[]
   photos             CardRealPhoto[]
+  CardUserFavorite   CardUserFavorite[]
 }
 
 model CardRealPhoto {
@@ -203,6 +205,17 @@ model TradeCard {
   createAt         DateTime           @default(now())
   updateAt         DateTime           @updatedAt
   collectionId     CardUserCollection @relation(fields: [userCollectionId], references: [id])
+}
+
+// * Historial de actividad
+model CardUserFavorite {
+  id                   Int                @id @default(autoincrement())
+  userId               Int
+  CardUserCollectionId Int
+  createAt             DateTime           @default(now())
+  updateAt             DateTime           @updatedAt
+  User                 User               @relation(fields: [userId], references: [id])
+  CardUserCollection   CardUserCollection @relation(fields: [CardUserCollectionId], references: [id])
 }
 
 // * -------------
