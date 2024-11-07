@@ -34,6 +34,7 @@ model User {
   UserWishList     WantedCard[]
   CardUserFavorite CardUserFavorite[]
   CardDeckFavorite DeckUserFavorite[]
+  TradeInterest    TradeInterest[]
 
   @@index([email])
 }
@@ -136,21 +137,22 @@ model Card {
 
 // * Cartas de un usuario
 model CardUserCollection {
-  id                   Int                  @id @default(autoincrement())
+  id                   Int                        @id @default(autoincrement())
   cardId               Int
   userId               Int
   CardUserProperties   CardUserProperties[]
-  createAt             DateTime             @default(now())
-  updateAt             DateTime             @updatedAt
+  createAt             DateTime                   @default(now())
+  updateAt             DateTime                   @updatedAt
   deckId               Int? // Este campo será opcional para cartas sueltas
-  Card                 Card                 @relation(fields: [cardId], references: [id])
-  User                 User                 @relation(fields: [userId], references: [id])
-  Deck                 Deck?                @relation(fields: [deckId], references: [id])
+  Card                 Card                       @relation(fields: [cardId], references: [id])
+  User                 User                       @relation(fields: [userId], references: [id])
+  Deck                 Deck?                      @relation(fields: [deckId], references: [id])
   TradeCard            TradeCard[]
   photos               CardRealPhoto[]
   CardUserFavorite     CardUserFavorite[]
-  sentTransactions     TradeTransaction[]   @relation("SentTransactions")
-  receivedTransactions TradeTransaction[]   @relation("ReceivedTransactions")
+  sentTransactions     TradeTransactionComplete[] @relation("SentTransactions")
+  receivedTransactions TradeTransactionComplete[] @relation("ReceivedTransactions")
+  TradeInterest        TradeInterest[]
 }
 
 model CardRealPhoto {
@@ -232,21 +234,28 @@ model DeckUserFavorite {
   Deck     Deck     @relation(fields: [deckId], references: [id])
 }
 
-model TradeTransaction {
+// * Transacciones de intercambio
+
+model TradeTransactionComplete {
   id         Int                @id @default(autoincrement())
-  //carta que el usuario ofrece
-  sendCardId Int
-  //carta que el usuario recibe
-  getCardId  Int
-  //estado de la transacción
-  status     TradeStatus
-  //fecha de creación
+  sendCardId Int //carta que el usuario ofrece
+  getCardId  Int //carta que el usuario recibe
+  status     TradeStatus        @default(PENDING)
   createAt   DateTime           @default(now())
-  //fecha de actualización
   updateAt   DateTime           @updatedAt
-  //carta que el usuario ofrece
   sendCard   CardUserCollection @relation("SentTransactions", fields: [sendCardId], references: [id])
   getCard    CardUserCollection @relation("ReceivedTransactions", fields: [getCardId], references: [id])
+}
+
+model TradeInterest {
+  id                 Int                @id @default(autoincrement())
+  interestUserId     Int
+  interestCardId     Int
+  tradeStatus        TradeStatus        @default(PENDING)
+  createAt           DateTime           @default(now())
+  updateAt           DateTime           @updatedAt
+  User               User               @relation(fields: [interestUserId], references: [id])
+  CardUserCollection CardUserCollection @relation(fields: [interestCardId], references: [id])
 }
 
 // * -------------
