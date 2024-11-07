@@ -146,15 +146,17 @@ model CardUserCollection {
   createAt             DateTime                   @default(now())
   updateAt             DateTime                   @updatedAt
   deckId               Int? // Este campo será opcional para cartas sueltas
-  Card                 Card                       @relation(fields: [cardId], references: [id])
-  User                 User                       @relation(fields: [userId], references: [id])
-  Deck                 Deck?                      @relation(fields: [deckId], references: [id])
   TradeCard            TradeCard[]
   photos               CardRealPhoto[]
   CardUserFavorite     CardUserFavorite[]
+  TradeInterest        TradeInterest[]
   sentTransactions     TradeTransactionComplete[] @relation("SentTransactions")
   receivedTransactions TradeTransactionComplete[] @relation("ReceivedTransactions")
-  TradeInterest        TradeInterest[]
+  Card                 Card                       @relation(fields: [cardId], references: [id])
+  User                 User                       @relation(fields: [userId], references: [id])
+  Deck                 Deck?                      @relation(fields: [deckId], references: [id])
+
+  @@index([cardId, userId])
 }
 
 model CardRealPhoto {
@@ -163,8 +165,10 @@ model CardRealPhoto {
   description      String?
   uploadedAt       DateTime            @default(now())
   updateAt         DateTime            @updatedAt
-  UserCollection   CardUserCollection? @relation(fields: [userCollectionId], references: [id])
   userCollectionId Int?
+  UserCollection   CardUserCollection? @relation(fields: [userCollectionId], references: [id])
+
+  @@index([photoUrl, userCollectionId])
 }
 
 model CardUserProperties {
@@ -185,9 +189,11 @@ model Deck {
   isPublic         Boolean              @default(true)
   createdAt        DateTime             @default(now())
   updatedAt        DateTime             @updatedAt
-  user             User                 @relation(fields: [userId], references: [id])
   UserCollection   CardUserCollection[]
   CardDeckFavorite DeckUserFavorite[]
+  user             User                 @relation(fields: [userId], references: [id])
+
+  @@index([name, userId, isPublic])
 }
 
 // * Cartas que el usuario necesita
