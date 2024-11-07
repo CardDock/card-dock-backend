@@ -258,6 +258,19 @@ model TradeInterest {
   CardUserCollection CardUserCollection @relation(fields: [interestCardId], references: [id])
 }
 
+// * Sistema de mensajes
+
+model Messages {
+  id         Int       @id @default(autoincrement())
+  senderId   Int // Usuario que envía el mensaje
+  receiverId Int // Usuario que recibe el mensaje
+  content    String // Contenido del mensaje
+  sentAt     DateTime  @default(now())
+  readAt     DateTime? // Fecha en que se leyó el mensaje, si aplica
+  sender     User      @relation("sent_messages", fields: [senderId], references: [id])
+  receiver   User      @relation("received_messages", fields: [receiverId], references: [id])
+}
+
 // * -------------
 // * Definir enums
 // * -------------
