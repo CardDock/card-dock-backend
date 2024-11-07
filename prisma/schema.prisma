@@ -35,6 +35,8 @@ model User {
   CardUserFavorite CardUserFavorite[]
   CardDeckFavorite DeckUserFavorite[]
   TradeInterest    TradeInterest[]
+  sendMessages     Messages[]           @relation("sent_messages")
+  receivedMessages Messages[]           @relation("received_messages")
 
   @@index([email])
 }
