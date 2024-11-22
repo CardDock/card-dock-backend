@@ -2,16 +2,12 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth2';
+import { googleAuthConfig } from '../constants/googleAuthConfig';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	constructor() {
-		super({
-			clientID: process.env.GOOGLE_APP_ID,
-			clientSecret: process.env.GOOGLE_APP_SECRET,
-			callbackURL: 'https://localhost:3000/auth/google/redirect',
-			scope: ['email', 'profile'],
-		});
+		super(googleAuthConfig);
 	}
 
 	async validate(
