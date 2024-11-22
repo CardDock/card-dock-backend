@@ -65,7 +65,7 @@ export default [
 	},
 	{
 		files: ['test/**.ts'],
-		languageOptions: { globals: globals.node, globals: globals.jest },
+		languageOptions: { globals: { ...globals.node, ...globals.jest } },
 		rules: {
 			'no-console': 'off',
 		},
