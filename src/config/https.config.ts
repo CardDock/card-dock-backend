@@ -7,14 +7,11 @@ export interface HttpsConfiguration {
 }
 
 export class HttpsConfigurationService {
-	private static readonly CERTIFICATES_PATH = path.join(
-		__dirname,
-		'../../certificates',
-	);
+	private static readonly CERTIFICATES_PATH = './certificates';
 
 	public static load(): HttpsConfiguration {
-		const keyPath = path.join(__dirname, this.CERTIFICATES_PATH, 'key.pem');
-		const certPath = path.join(__dirname, this.CERTIFICATES_PATH, 'cert.pem');
+		const keyPath = path.join(this.CERTIFICATES_PATH, 'key.pem');
+		const certPath = path.join(this.CERTIFICATES_PATH, 'cert.pem');
 
 		this.validateCertificates(keyPath, certPath);
 
