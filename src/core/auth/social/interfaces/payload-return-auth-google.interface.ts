@@ -7,6 +7,10 @@ export interface PayloadReturnauthGoogle {
 	tokens: TokensGoogle;
 }
 
+export interface getLoginGoogle {
+	msg: string;
+}
+
 interface TokensGoogle {
 	accessToken: string;
 	refreshToken: string;

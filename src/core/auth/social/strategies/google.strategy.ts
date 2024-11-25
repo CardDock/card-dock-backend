@@ -15,8 +15,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 		accessToken: string,
 		refreshToken: string,
 		profile: Profile,
-		done: (err: any, user: any, info?: any) => void,
-	): Promise<any> {
+		done: (err: unknown, user: unknown, info?: unknown) => void,
+	): Promise<PayloadReturnauthGoogle | null> {
 		const { email, name, displayName, picture } = profile;
 
 		const payload: PayloadReturnauthGoogle = {
@@ -32,5 +32,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 		};
 
 		done(null, payload);
+
+		return payload;
 	}
 }
