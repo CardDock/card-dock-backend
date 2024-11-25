@@ -2,12 +2,13 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth2';
-import { googleAuthConfig } from '../constants/googleAuthConfig';
+import { GoogleAuthConfig } from '../constants/googleAuthConfig';
+import { PayloadReturnauthGoogle } from '../interfaces/payload-return-auth-google.interface';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	constructor() {
-		super(googleAuthConfig);
+		super(GoogleAuthConfig.googleAuthStrategy());
 	}
 
 	async validate(
@@ -18,7 +19,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	): Promise<any> {
 		const { email, name, displayName, picture } = profile;
 
-		const payload = {
+		const payload: PayloadReturnauthGoogle = {
 			email: email,
 			name: displayName,
 			firstName: name.givenName,
