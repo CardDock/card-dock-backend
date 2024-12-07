@@ -3,10 +3,11 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth2';
 import { GoogleAuthConfig } from '../constants/googleAuthConfig';
 import { PayloadReturnauthGoogle } from '../interfaces/payload-return-auth-google.interface';
+import { GoogleAuthService } from '../services/google-auth.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-	constructor() {
+	constructor(private googleAuthService: GoogleAuthService) {
 		super(GoogleAuthConfig.googleAuthStrategy());
 	}
 
@@ -18,6 +19,13 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	): Promise<PayloadReturnauthGoogle | null> {
 		const { email, name, displayName, picture } = profile;
 
+		const existingUser = await this.googleAuthService.searchGoogleUser(profile);
+
+		if (existingUser) {
+			done(null, existingUser);
+			return null;
+		}
+
 		const payload: PayloadReturnauthGoogle = {
 			email: email,
 			name: displayName,
@@ -26,6 +34,8 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 			picture: picture,
 			accessToken: accessToken,
 		};
+
+		this.googleAuthService.createGoogleUser(payload);
 
 		done(null, payload);
 
