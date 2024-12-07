@@ -4,14 +4,9 @@ export interface PayloadReturnauthGoogle {
 	firstName: string;
 	lastName: string;
 	picture: string;
-	tokens: TokensGoogle;
+	accessToken: string;
 }
 
 export interface getLoginGoogle {
 	msg: string;
-}
-
-interface TokensGoogle {
-	accessToken: string;
-	refreshToken: string;
 }
