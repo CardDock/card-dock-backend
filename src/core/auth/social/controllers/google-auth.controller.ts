@@ -1,22 +1,28 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { Controller, Get, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import {
-	getLoginGoogle,
-	PayloadReturnauthGoogle,
-} from '../interfaces/payload-return-auth-google.interface';
+import { getLoginGoogle } from '../interfaces/payload-return-auth-google.interface';
 
 @Controller('auth')
 export class GoogleAuthController {
 	@Get('google/login')
 	@UseGuards(AuthGuard('google'))
 	async googleLogin(): Promise<getLoginGoogle> {
-		return { msg: 'Google Authentication' };
+		return {
+			statusCode: 307,
+			message: {
+				user_auth_google: 'redirecting',
+			},
+		};
 	}
 
 	@Get('google/redirect')
 	@UseGuards(AuthGuard('google'))
-	async googleLoginRedirect(@Req() req: any): Promise<PayloadReturnauthGoogle> {
-		return req.user;
+	async googleLoginRedirect(): Promise<getLoginGoogle> {
+		return {
+			statusCode: 200,
+			message: {
+				user_auth_google: 'ok',
+			},
+		};
 	}
 }

@@ -8,5 +8,8 @@ export interface PayloadReturnauthGoogle {
 }
 
 export interface getLoginGoogle {
-	msg: string;
+	statusCode: number;
+	message: {
+		user_auth_google: string;
+	};
 }
