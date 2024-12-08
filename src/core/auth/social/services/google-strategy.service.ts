@@ -3,10 +3,13 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth2';
 import { GoogleAuthConfig } from '../constants/googleAuthConfig';
 import { PayloadReturnauthGoogle } from '../interfaces/payload-return-auth-google.interface';
-import { GoogleAuthService } from '../services/google-auth.service';
+import { GoogleAuthService } from './google-auth.service';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+export class GoogleStrategyService extends PassportStrategy(
+	Strategy,
+	'google',
+) {
 	constructor(private googleAuthService: GoogleAuthService) {
 		super(GoogleAuthConfig.googleAuthStrategy());
 	}
