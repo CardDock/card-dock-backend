@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PayloadReturnauthGoogle } from '../interfaces/payload-return-auth-google.interface';
-import { PrismaService } from 'src/core/services/prisma.service';
+import { PrismaService } from '@src/core/services/prisma.service';
 
 @Injectable()
 export class GoogleAuthService {
