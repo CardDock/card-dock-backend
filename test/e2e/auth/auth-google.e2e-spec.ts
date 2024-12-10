@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthGuard } from '@nestjs/passport';
 import { INestApplication } from '@nestjs/common';
-import { GoogleAuthController } from '@src/core/auth/social/controllers/google-auth.controller';
+import { GoogleAuthController } from '@src/core/auth/controllers/google-auth.controller';
 
 describe('GoogleAuthController', () => {
 	let app: INestApplication;
