@@ -9,11 +9,10 @@ import { GoogleStrategyService } from './infrastructure/strategys/google-strateg
 	imports: [DataBaseModule],
 	controllers: [GoogleAuthController],
 	providers: [
+		{ provide: 'AuthRepositoryPort', useClass: AuthRepository },
 		GoogleStrategyService,
 		EmailFindService,
-		AuthRepository,
-		{ provide: 'AuthRepositoryPort', useClass: AuthRepository },
 	],
-	exports: [EmailFindService],
+	exports: [],
 })
 export class AuthModule {}

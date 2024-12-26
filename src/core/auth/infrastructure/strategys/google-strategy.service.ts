@@ -28,9 +28,7 @@ export class GoogleStrategyService extends PassportStrategy(
 		const { email, name, displayName, picture } = profile;
 
 		// const instanceUser = new EmailFindService(this.userRepository);
-		const existingUser = await new EmailFindService(
-			this.userRepository,
-		).findByEmail(profile.email);
+		const existingUser = await this.emailFindService.findByEmail(profile.email);
 
 		if (existingUser) {
 			done(null, existingUser);
