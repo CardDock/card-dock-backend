@@ -1,16 +1,21 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth2';
 import { GoogleAuthConfig } from '../constants/googleAuthConfig';
 import { PayloadReturnauthGoogle } from '../interfaces/payload-return-auth-google.interface';
-import { GoogleAuthService } from './google-auth.service';
+import { EmailFindService } from '../../application/services/email-find.service';
+import { AuthRepositoryPort } from '../../domain/ports/auth-repository-port';
 
 @Injectable()
 export class GoogleStrategyService extends PassportStrategy(
 	Strategy,
 	'google',
 ) {
-	constructor(private googleAuthService: GoogleAuthService) {
+	constructor(
+		private readonly emailFindService: EmailFindService,
+		@Inject('AuthRepositoryPort')
+		private readonly userRepository: AuthRepositoryPort,
+	) {
 		super(GoogleAuthConfig.googleAuthStrategy());
 	}
 
@@ -22,7 +27,10 @@ export class GoogleStrategyService extends PassportStrategy(
 	): Promise<PayloadReturnauthGoogle | null> {
 		const { email, name, displayName, picture } = profile;
 
-		const existingUser = await this.googleAuthService.searchGoogleUser(profile);
+		// const instanceUser = new EmailFindService(this.userRepository);
+		const existingUser = await new EmailFindService(
+			this.userRepository,
+		).findByEmail(profile.email);
 
 		if (existingUser) {
 			done(null, existingUser);
@@ -38,7 +46,8 @@ export class GoogleStrategyService extends PassportStrategy(
 			accessToken: accessToken,
 		};
 
-		this.googleAuthService.createGoogleUser(payload);
+		// Crea el usuario llamando al puerto de crear usuario del modulo User
+		// this.googleAuthService.createGoogleUser(payload);
 
 		done(null, payload);
 

@@ -1,7 +1,7 @@
 import { Controller, Get, Param } from '@nestjs/common';
-import { EmailFindService } from '../../application/services/email-find.service';
+import { EmailFindService } from 'src/core/auth/application/services/email-find.service';
 
-@Controller('auth')
+@Controller('emailfind')
 export class EmailFindController {
 	constructor(private readonly emailFindService: EmailFindService) {}
 

@@ -1,20 +1,17 @@
 import { Module } from '@nestjs/common';
-import { GoogleStrategyService } from './services/google-strategy.service';
-import { GoogleAuthService } from './services/google-auth.service';
-import { AuthService } from './services/auth.service';
-import { EmailFindController } from './infrastructure/controller/emailfind.controller';
 import { AuthRepository } from './infrastructure/repository/auth.repository';
-import { EmailFindService } from './application/services/email-find.service';
+import { EmailFindService } from 'src/core/auth/application/services/email-find.service';
 import { DataBaseModule } from '../data-base/data-base.module';
+import { GoogleAuthController } from './infrastructure/controller/google-auth.controller';
+import { GoogleStrategyService } from './infrastructure/strategys/google-strategy.service';
 
 @Module({
 	imports: [DataBaseModule],
-	controllers: [EmailFindController],
+	controllers: [GoogleAuthController],
 	providers: [
 		GoogleStrategyService,
-		GoogleAuthService,
-		AuthService,
 		EmailFindService,
+		AuthRepository,
 		{ provide: 'AuthRepositoryPort', useClass: AuthRepository },
 	],
 	exports: [EmailFindService],
