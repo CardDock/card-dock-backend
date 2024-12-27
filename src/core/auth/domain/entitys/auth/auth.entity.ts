@@ -18,10 +18,14 @@ export class AuthEntity extends AggregateDomain {
 		email: AuthEmail,
 		password: AuthPassword,
 	): AuthEntity {
-		const video = new AuthEntity(name, email, password);
+		const authEntity = new AuthEntity(name, email, password);
 
-		video.record(new AuthCreateDomainEvent());
+		authEntity.record(new AuthCreateDomainEvent(authEntity));
 
-		return video;
+		return authEntity;
+	}
+
+	passwordMatches(password: AuthPassword): boolean {
+		return this.password.isEqual(password);
 	}
 }
