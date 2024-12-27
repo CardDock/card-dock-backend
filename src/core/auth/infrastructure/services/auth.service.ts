@@ -1,31 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { GoogleAuthService } from './google-auth.service';
+import { JwtService } from '@nestjs/jwt';
+import { AuthEntity } from '../../domain/entitys/auth/auth.entity';
+import { AuthDto } from '../dtos/auth.dto';
+import { AuthName } from '../../domain/entitys/auth/value-object/auth-name';
+import { AuthEmail } from '../../domain/entitys/auth/value-object/auth-email';
+import { AuthPassword } from '../../domain/entitys/auth/value-object/auth-password';
 
 @Injectable()
 export class AuthService {
-	constructor(private googleAuthService: GoogleAuthService) {}
+	constructor(private jwtTokenService: JwtService) {}
 
-	public async validateUser(
-		emailUser: string,
-		passwordUser: string,
-	): Promise<unknown> {
-		// primero mira si el usuario esta en la base de datos
-		// compara las credenciales que envia con las que tienes en la base de datos
-		// asi te aseguras que es correctamente quien dice ser
-		// si todo esta bien, crea un token y lo devuelve
-		const existingUser =
-			await this.googleAuthService.searchGoogleUser2(emailUser);
+	async loginWithCredentials(
+		authDto: AuthDto,
+	): Promise<{ access_token: string }> {
+		const authName = new AuthName(authDto.name);
+		const authEmail = new AuthEmail(authDto.email);
+		const authPassword = new AuthPassword(authDto.password);
 
-		if (!existingUser) {
-			return 'User no exist';
-		}
+		const authEntity = AuthEntity.create(authName, authEmail, authPassword);
 
-		// if (existingUser.password !== passwordUser) {
-		// 	return 'Password incorrect';
-		// }
+		const payload = {
+			name: authEntity.name,
+			email: authEntity.email,
+			password: authEntity.password,
+		};
 
-		// if (existingUser.password === passwordUser) {
-		// 	return 'Token';
-		// }
+		return {
+			access_token: this.jwtTokenService.sign(payload),
+		};
 	}
 }
