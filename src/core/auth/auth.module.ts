@@ -5,6 +5,7 @@ import { EmailFindService } from 'src/core/auth/application/services/email-find.
 import { DataBaseModule } from '../data-base/data-base.module';
 import { GoogleAuthController } from './infrastructure/controller/google-auth.controller';
 import { GoogleStrategyService } from './infrastructure/strategys/google-strategy.service';
+import { SingJwtController } from './infrastructure/controller/sing-jwt.controller';
 import { AuthService } from './infrastructure/services/auth.service';
 
 @Module({
@@ -15,6 +16,7 @@ import { AuthService } from './infrastructure/services/auth.service';
 			signOptions: { expiresIn: '60m' },
 		}),
 	],
+	controllers: [GoogleAuthController, SingJwtController],
 	providers: [
 		{ provide: 'AuthRepositoryPort', useClass: AuthRepository },
 		GoogleStrategyService,
