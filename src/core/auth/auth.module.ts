@@ -7,21 +7,27 @@ import { GoogleAuthController } from './infrastructure/controller/google-auth.co
 import { GoogleStrategyService } from './infrastructure/strategys/google-strategy.service';
 import { SingJwtController } from './infrastructure/controller/sing-jwt.controller';
 import { AuthService } from './infrastructure/services/auth.service';
+import { JwtKey } from './infrastructure/constants/jwt-key';
+import { JwtStrategy } from './infrastructure/strategys/jwt.strategy';
+import { EmailFindController } from './infrastructure/controller/emailfind.controller';
+import { PassportModule } from '@nestjs/passport/dist';
 
 @Module({
 	imports: [
 		DataBaseModule,
+		PassportModule,
 		JwtModule.register({
-			secret: '1234567890',
+			secret: JwtKey.secret,
 			signOptions: { expiresIn: '60m' },
 		}),
 	],
-	controllers: [GoogleAuthController, SingJwtController],
+	controllers: [GoogleAuthController, SingJwtController, EmailFindController],
 	providers: [
 		{ provide: 'AuthRepositoryPort', useClass: AuthRepository },
 		GoogleStrategyService,
 		EmailFindService,
 		AuthService,
+		JwtStrategy,
 	],
 	exports: [],
 })
