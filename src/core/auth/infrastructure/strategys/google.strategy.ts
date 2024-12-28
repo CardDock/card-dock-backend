@@ -7,7 +7,7 @@ import { EmailFindService } from '../../application/services/email-find.service'
 import { AuthRepositoryPort } from '../../domain/ports/auth-repository-port';
 
 @Injectable()
-export class GoogleStrategyService extends PassportStrategy(
+export class GoogleStrategy extends PassportStrategy(
 	Strategy,
 	'google',
 ) {
