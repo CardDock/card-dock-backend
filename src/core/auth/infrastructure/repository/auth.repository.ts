@@ -9,6 +9,9 @@ export class AuthRepository implements AuthRepositoryPort {
 	public async findByEmail(email: string): Promise<unknown> {
 		return this.db.user.findUnique({
 			where: { email },
+			include: {
+				authProviders: true,
+			},
 		});
 	}
 }
