@@ -3,7 +3,7 @@ import { AuthEntity } from '../../domain/entitys/auth/auth.entity';
 import { AuthEmail } from '../../domain/entitys/auth/value-object/auth-email';
 import { AuthName } from '../../domain/entitys/auth/value-object/auth-name';
 import { AuthPassword } from '../../domain/entitys/auth/value-object/auth-password';
-import { AuthDto } from '../../infrastructure/dtos/auth.dto';
+import { AuthDto } from '../dtos/auth.dto';
 import { TokenSignerPort } from '../ports/token-signer.port';
 
 @Injectable()
