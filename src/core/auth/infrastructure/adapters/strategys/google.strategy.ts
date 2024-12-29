@@ -1,10 +1,9 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth2';
-import { GoogleAuthConfig } from '../constants/googleAuthConfig';
-import { PayloadReturnauthGoogle } from '../interfaces/payload-return-auth-google.interface';
-import { EmailFindService } from '../../application/services/email-find.service';
-import { AuthRepositoryPort } from '../../domain/ports/auth-repository-port';
+import { GoogleAuthConfig } from '../../constants/googleAuthConfig';
+import { PayloadReturnauthGoogle } from '../../interfaces/payload-return-auth-google.interface';
+import { EmailFindService } from '../../../application/services/email-find.service';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(
@@ -13,8 +12,6 @@ export class GoogleStrategy extends PassportStrategy(
 ) {
 	constructor(
 		private readonly emailFindService: EmailFindService,
-		@Inject('AuthRepositoryPort')
-		private readonly userRepository: AuthRepositoryPort,
 	) {
 		super(GoogleAuthConfig.googleAuthStrategy());
 	}
@@ -27,7 +24,6 @@ export class GoogleStrategy extends PassportStrategy(
 	): Promise<PayloadReturnauthGoogle | null> {
 		const { email, name, displayName, picture } = profile;
 
-		// const instanceUser = new EmailFindService(this.userRepository);
 		const existingUser = await this.emailFindService.findByEmail(profile.email);
 
 		if (existingUser) {
@@ -43,9 +39,6 @@ export class GoogleStrategy extends PassportStrategy(
 			picture: picture,
 			accessToken: accessToken,
 		};
-
-		// Crea el usuario llamando al puerto de crear usuario del modulo User
-		// this.googleAuthService.createGoogleUser(payload);
 
 		done(null, payload);
 
