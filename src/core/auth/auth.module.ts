@@ -12,11 +12,15 @@ import { PassportModule } from '@nestjs/passport/dist';
 import { AuthAplicationService } from './application/services/auth-aplication.service';
 import { AuthAdapter } from './infrastructure/adapters/auth.adapter';
 import { AuthRepositoryAdapter } from './infrastructure/adapters/repository/auth-repository.adapter';
+import { UserModule } from '../user/user.module';
+import { CreateUserApplicationService } from '../user/application/create-user-application.service';
+import { CreateUserRepositoryAdapter } from '../user/infrastructure/adapters/repository/create-user-repository.adapter';
 
 @Module({
 	imports: [
 		DataBaseModule,
 		PassportModule,
+		UserModule,
 		JwtModule.register({
 			secret: JwtKey.secret,
 			signOptions: { expiresIn: '60m' },
@@ -26,10 +30,12 @@ import { AuthRepositoryAdapter } from './infrastructure/adapters/repository/auth
 	providers: [
 		{ provide: 'AuthRepositoryPort', useClass: AuthRepositoryAdapter },
 		{ provide: 'TokenSignerPort', useClass: AuthAdapter },
+		{ provide: 'UserRepositoryPort', useClass: CreateUserRepositoryAdapter },
 		GoogleStrategy,
 		JwtStrategy,
 		EmailFindService,
 		AuthAplicationService,
+		CreateUserApplicationService,
 	],
 	exports: [],
 })
