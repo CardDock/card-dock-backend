@@ -4,14 +4,14 @@ import { Profile, Strategy } from 'passport-google-oauth2';
 import { GoogleAuthConfig } from '../../constants/googleAuthConfig';
 import { PayloadReturnauthGoogle } from '../../interfaces/payload-return-auth-google.interface';
 import { EmailFindService } from '../../../application/services/email-find.service';
+import { CreateUserApplicationService } from '@src/core/user/application/create-user-application.service';
+import { CreateUserDto } from '@src/core/user/application/dtos/create-user.dto';
 
 @Injectable()
-export class GoogleStrategy extends PassportStrategy(
-	Strategy,
-	'google',
-) {
+export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	constructor(
 		private readonly emailFindService: EmailFindService,
+		private readonly createUserApplicationService: CreateUserApplicationService,
 	) {
 		super(GoogleAuthConfig.googleAuthStrategy());
 	}
@@ -40,8 +40,20 @@ export class GoogleStrategy extends PassportStrategy(
 			accessToken: accessToken,
 		};
 
+		this.createNewUserGoogle(payload);
+
 		done(null, payload);
 
 		return payload;
+	}
+
+	private createNewUserGoogle(payload) {
+		const userCreate: CreateUserDto = {
+			name: payload.name,
+			email: payload.email,
+			picture: payload.picture,
+		};
+
+		return this.createUserApplicationService.create(userCreate);
 	}
 }
