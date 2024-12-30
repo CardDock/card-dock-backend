@@ -11,7 +11,7 @@ export class EmailFindService {
 	public async findByEmail(email: string): Promise<unknown> {
 		const user = await this.userRepository.findByEmail(email);
 
-		if (!user) throw new Error(`User with email ${email} not found`);
+		if (!user) return null;
 
 		return user;
 	}
