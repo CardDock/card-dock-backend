@@ -5,17 +5,19 @@ import { UserEntity } from '../domain/entity/user.entity';
 
 @Injectable()
 export class CreateUserApplicationService {
-		constructor(
-			@Inject('UserRepositoryPort') private readonly userRepositoryPort: UserRepositoryPort,
-		) {}
+	constructor(
+		@Inject('UserRepositoryPort')
+		private readonly userRepositoryPort: UserRepositoryPort,
+	) {}
 
-		public async create(user: CreateUserDto): Promise<any> {
-			const newUser = new UserEntity(
-				user.email,
-				user.name,
-				user.email,
-			);
+	public async create(user: CreateUserDto): Promise<any> {
+		const newUser = new UserEntity(
+			user.email,
+			user.name,
+			user.email,
+			user.picture,
+		);
 
-			return this.userRepositoryPort.create(newUser);
-		}
+		return this.userRepositoryPort.create(newUser);
+	}
 }
