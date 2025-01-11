@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	HttpException,
+	HttpStatus,
+	Post,
+} from '@nestjs/common';
 import { AuthDto } from '../../application/dtos/auth.dto';
 import { AuthAplicationService } from '../../application/services/auth-aplication.service';
 
@@ -8,6 +14,10 @@ export class SingJwtController {
 
 	@Post('login')
 	async login(@Body() authDto: AuthDto) {
-		return this.authAplicationService.loginWithCredentials(authDto);
+		try {
+			return this.authAplicationService.loginWithCredentials(authDto);
+		} catch {
+			throw new HttpException('Credenciales inválidas', HttpStatus.NOT_FOUND);
+		}
 	}
 }

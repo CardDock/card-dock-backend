@@ -1,24 +1,19 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { EmailFindService } from 'src/core/auth/application/services/email-find.service';
-import { DataBaseModule } from '../data-base/data-base.module';
-import { GoogleAuthController } from './infrastructure/controllers/google-auth.controller';
-import { GoogleStrategy } from './infrastructure/adapters/strategys/google.strategy';
+// import { EmailFindService } from 'src/core/auth/application/services/email-find.service';
+import { GoogleAuthController } from '../../oauth2-provider/infrastructure/controller/google-auth.controller';
 import { SingJwtController } from './infrastructure/controllers/sing-jwt.controller';
 import { JwtKey } from './infrastructure/constants/jwt-key';
 import { JwtStrategy } from './infrastructure/adapters/strategys/jwt.strategy';
 import { EmailFindController } from './infrastructure/controllers/emailfind.controller';
 import { PassportModule } from '@nestjs/passport/dist';
 import { AuthAplicationService } from './application/services/auth-aplication.service';
-import { AuthAdapter } from './infrastructure/adapters/auth.adapter';
+import { TokenManagerAdapter } from './infrastructure/adapters/auth.adapter';
 import { AuthRepositoryAdapter } from './infrastructure/adapters/repository/auth-repository.adapter';
 import { UserModule } from '../user/user.module';
-import { CreateUserApplicationService } from '../user/application/create-user-application.service';
-import { CreateUserRepositoryAdapter } from '../user/infrastructure/adapters/repository/create-user-repository.adapter';
 
 @Module({
 	imports: [
-		DataBaseModule,
 		PassportModule,
 		UserModule,
 		JwtModule.register({
@@ -29,13 +24,9 @@ import { CreateUserRepositoryAdapter } from '../user/infrastructure/adapters/rep
 	controllers: [GoogleAuthController, SingJwtController, EmailFindController],
 	providers: [
 		{ provide: 'AuthRepositoryPort', useClass: AuthRepositoryAdapter },
-		{ provide: 'TokenSignerPort', useClass: AuthAdapter },
-		{ provide: 'UserRepositoryPort', useClass: CreateUserRepositoryAdapter },
-		GoogleStrategy,
+		{ provide: 'TokenManagerPort', useClass: TokenManagerAdapter },
 		JwtStrategy,
-		EmailFindService,
 		AuthAplicationService,
-		CreateUserApplicationService,
 	],
 	exports: [],
 })
