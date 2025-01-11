@@ -1,6 +1,7 @@
-import { Module } from '@nestjs/common';
-import { DataBaseConnectService } from './services/data-base-connect.service';
+import { Global, Module } from '@nestjs/common';
+import { DataBaseConnectService } from './infrastructure/services/data-base-connect.service';
 
+@Global()
 @Module({
 	imports: [],
 	controllers: [],
