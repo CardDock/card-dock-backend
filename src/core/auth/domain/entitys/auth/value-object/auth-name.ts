@@ -1,11 +1,17 @@
-export class AuthName {
-	constructor(public readonly value: string) {
-		if (!this.validate(value)) throw new Error('Invalid name');
+import { StringValueObject } from '@src/shared/domain/value-objects/string-value-object';
+
+export class AuthUsername extends StringValueObject {
+	private minLength: number = 1;
+	private maxLength: number = 250;
+
+	constructor(public readonly username: string) {
+		super(username);
+		if (this.validateLengthValue(username)) throw new Error('Invalid name');
 	}
 
-	private validate(value: string): boolean {
-		if (value.length < 3 || value.length > 20) return false;
-
-		return true;
+	private validateLengthValue(username: string): boolean {
+		return username.length > this.minLength || username.length < this.maxLength
+			? false
+			: true;
 	}
 }
