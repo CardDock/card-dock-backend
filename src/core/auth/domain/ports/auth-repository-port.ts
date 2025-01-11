@@ -1,3 +1,5 @@
+import { AuthEntity } from '../entitys/auth/auth.entity';
+
 export interface AuthRepositoryPort {
-	findByEmail(email: string): Promise<unknown>;
+	findByCredencial(auth: AuthEntity): Promise<unknown>;
 }
