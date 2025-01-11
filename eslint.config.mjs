@@ -6,9 +6,10 @@ export default [
 	pluginJs.configs.recommended,
 	...tseslint.configs.recommended,
 	{
-		files: ['src/*.ts'],
+		files: ['src/**/*.ts'],
 		languageOptions: { globals: globals.node },
 		rules: {
+			'@typescript-eslint/no-explicit-any': 'warn', // Permite el uso de `any`
 			'semi': 'error', // Requiere punto y coma al final de las sentencias
 			'prefer-const': 'error', // Sugiere usar `const` para variables que nunca se reasignan
 			'no-unused-vars': [
@@ -57,15 +58,15 @@ export default [
 		},
 	},
 	{
-		files: ['scripts/**'],
+		files: ['scripts/**/*.{js,ts}'],
 		languageOptions: { globals: globals.node },
 		rules: {
 			'no-console': 'off',
 		},
 	},
 	{
-		files: ['test/**.ts'],
-		languageOptions: { globals: globals.node, globals: globals.jest },
+		files: ['test/**/**.ts'],
+		languageOptions: { globals: { ...globals.node, ...globals.jest } },
 		rules: {
 			'no-console': 'off',
 		},
@@ -73,48 +74,21 @@ export default [
 	{
 		ignores: [
 			// Compiled output
-			'/dist',
-			'/tmp',
-			'/out-tsc',
-			'/bazel-out',
+			'dist/',
 
 			// Node
-			'/node_modules',
-			'npm-debug.log',
-			'yarn-error.log',
+			'node_modules/',
 
 			// IDEs and editors
-			'.idea/',
-			'.project',
-			'.classpath',
-			'.c9/',
-			'*.launch',
-			'.settings/',
+			'.editorconfig',
 
 			// Visual Studio Code
-			'.vscode/*',
-			'!.vscode/settings.json',
-			'!.vscode/tasks.json',
-			'!.vscode/launch.json',
-			'!.vscode/extensions.json',
-			'.history/*',
+			'.vscode/',
 
 			// Miscellaneous
-			'.angular/*',
-			'.sass-cache/*',
-			'/connect.lock',
-			'/coverage',
-			'/tests/coverage',
-			'/libpeerconnection.log',
-			'testem.log',
-			'/typings',
-
-			// System files
-			'.DS_Store',
-			'Thumbs.db',
-
-			// scripts
-			'scripts/*',
+			'certificates/',
+			'.husky/',
+			'prettier.config.js',
 		],
 	},
 ];
