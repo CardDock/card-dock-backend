@@ -76,8 +76,8 @@ model UserNotifications {
 model UserProfile {
   id            Int           @id @default(autoincrement())
   userId        Int           @unique
-  countryId     Int
-  cityId        Int
+  countryId     Int?
+  cityId        Int?
   birthdate     DateTime?
   bio           String?
   portraitUser  String?
