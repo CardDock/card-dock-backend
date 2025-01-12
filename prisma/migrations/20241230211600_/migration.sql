@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "UserProfile" ALTER COLUMN "countryId" DROP NOT NULL,
+ALTER COLUMN "cityId" DROP NOT NULL;
