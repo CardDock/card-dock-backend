@@ -1,7 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AuthEntity } from '../../domain/entitys/auth/auth.entity';
-import { AuthUsername } from '../../domain/entitys/auth/value-object/auth-name';
-import { AuthPassword } from '../../domain/entitys/auth/value-object/auth-password';
 import { AuthDto } from '../dtos/auth.dto';
 import { TokenManagerPort } from '../ports/token-manager.port';
 import { AuthRepositoryPort } from '../../domain/ports/auth-repository-port';
@@ -16,10 +14,7 @@ export class AuthAplicationService {
 	) {}
 
 	loginWithCredentials(authDto: AuthDto): { access_token: any } {
-		const auth = AuthEntity.create(
-			new AuthUsername(authDto.username),
-			new AuthPassword(authDto.password),
-		);
+		const auth = AuthEntity.create(authDto.username, authDto.password);
 
 		if (!this.validateAuthCredentials(auth)) {
 			throw new Error('Credenciales incorrectas');

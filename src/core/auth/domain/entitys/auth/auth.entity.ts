@@ -11,11 +11,17 @@ export class AuthEntity extends AggregateDomain {
 		super();
 	}
 
-	static create(username: AuthUsername, password: AuthPassword): AuthEntity {
-		const authEntity = new AuthEntity(username, password);
+	static create(usernameDto: string, passwordDto: string): AuthEntity {
+		const username = new AuthUsername(usernameDto);
+		const password = new AuthPassword(passwordDto);
 
-		authEntity.record(new AuthCreateDomainEvent(authEntity));
+		const authEntity = new AuthEntity(username, password);
+		authEntity.registerCreationEvent();
 
 		return authEntity;
+	}
+
+	private registerCreationEvent(): void {
+		this.record(new AuthCreateDomainEvent(this));
 	}
 }
