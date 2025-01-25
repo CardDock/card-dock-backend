@@ -8,6 +8,10 @@ import { TokenManagerAdapter } from './infrastructure/adapters/auth.adapter';
 import { AuthRepositoryAdapter } from './infrastructure/adapters/repository/auth-repository.adapter';
 import { UserModule } from '@src/user/user.module';
 import { EnvironmentConfig } from '@src/config/environment.config';
+import {
+	AUTH_REPOSITORY_PORT,
+	TOKEN_MANAGER_PORT,
+} from './application/common/tokens';
 
 @Module({
 	imports: [
@@ -20,8 +24,8 @@ import { EnvironmentConfig } from '@src/config/environment.config';
 	],
 	controllers: [SingJwtController],
 	providers: [
-		{ provide: 'AuthRepositoryPort', useClass: AuthRepositoryAdapter },
-		{ provide: 'TokenManagerPort', useClass: TokenManagerAdapter },
+		{ provide: TOKEN_MANAGER_PORT, useClass: TokenManagerAdapter },
+		{ provide: AUTH_REPOSITORY_PORT, useClass: AuthRepositoryAdapter },
 		JwtStrategy,
 		AuthAplicationService,
 	],

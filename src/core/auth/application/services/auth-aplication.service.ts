@@ -3,13 +3,14 @@ import { AuthEntity } from '../../domain/entitys/auth/auth.entity';
 import { AuthDto } from '../dtos/auth.dto';
 import { TokenManagerPort } from '../ports/token-manager.port';
 import { AuthRepositoryPort } from '../../domain/ports/auth-repository-port';
+import { AUTH_REPOSITORY_PORT, TOKEN_MANAGER_PORT } from '../common/tokens';
 
 @Injectable()
 export class AuthAplicationService {
 	constructor(
-		@Inject('TokenManagerPort')
+		@Inject(TOKEN_MANAGER_PORT)
 		private readonly tokenManager: TokenManagerPort,
-		@Inject('AuthRepositoryPort')
+		@Inject(AUTH_REPOSITORY_PORT)
 		private readonly authRepository: AuthRepositoryPort,
 	) {}
 
