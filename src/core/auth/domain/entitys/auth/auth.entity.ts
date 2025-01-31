@@ -15,11 +15,11 @@ export class AuthEntity extends AggregateDomain {
 		const usernameInstance = new AuthUsername(username);
 		const passwordInstance = new AuthPassword(password);
 
-		const authEntity = new AuthEntity(usernameInstance, passwordInstance);
+		const auth = new AuthEntity(usernameInstance, passwordInstance);
 
-		authEntity.registerCreationEvent();
+		auth.record(new AuthCreateDomainEvent(auth));
 
-		return authEntity;
+		return auth;
 	}
 
 	get username(): AuthUsername {
@@ -28,9 +28,5 @@ export class AuthEntity extends AggregateDomain {
 
 	get password(): AuthPassword {
 		return this.password;
-	}
-
-	private registerCreationEvent(): void {
-		this.record(new AuthCreateDomainEvent(this));
 	}
 }
