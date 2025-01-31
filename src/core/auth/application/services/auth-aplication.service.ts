@@ -14,12 +14,12 @@ export class AuthAplicationService {
 		private readonly authRepository: AuthRepositoryPort,
 	) {}
 
-	loginWithCredentials(authDto: AuthDto): { access_token: any } {
+	async loginWithCredentials(
+		authDto: AuthDto,
+	): Promise<{ access_token: unknown }> {
 		const auth = AuthEntity.create(authDto.username, authDto.password);
 
-		if (!this.validateAuthCredentials(auth)) {
-			throw new Error('Credenciales incorrectas');
-		}
+		await this.validateAuthCredentials(auth);
 
 		return {
 			access_token: this.tokenManager.signToken({
@@ -29,9 +29,9 @@ export class AuthAplicationService {
 		};
 	}
 
-	private async validateAuthCredentials(auth: AuthEntity): Promise<boolean> {
+	private async validateAuthCredentials(auth: AuthEntity): Promise<void> {
 		const user = await this.authRepository.findByCredencial(auth);
 
-		return user ? true : false;
+		if (!user) throw new Error('Credenciales incorrectas');
 	}
 }
