@@ -14,17 +14,18 @@ export class ProfileEntity {
 	}
 
 	get email(): string {
-		return this.email;
+		return this._email;
 	}
 
 	get name(): string {
-		return this.name;
+		return this._name;
 	}
 
 	get picture(): string {
-		return this.picture;
+		return this._picture;
 	}
 }
 
 // * TODO annadir en esta entidad los value objects de la entidad
 // * TODO pensar un cambio para cuando necesite facebook y creascan los numeros de oauths2
+
