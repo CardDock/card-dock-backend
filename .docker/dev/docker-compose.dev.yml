@@ -1,15 +1,14 @@
-version: '3.8'
 services:
   app:
     container_name: carddock-backend
     build:
-      context: ../
-      dockerfile: .docker/dockerfile/Dockerfile.dev
+      context: ../../
+      dockerfile: .docker/dev/Dockerfile.dev
     volumes:
-      - ../:/usr/src/app
+      - ../../:/usr/src/app
       - /usr/src/app/node_modules
     env_file:
-      - ../.env
+      - ../../.env
     environment:
       - NODE_ENV=development
       - SONAR_HOST_URL=http://sonarqube:9000
@@ -18,7 +17,8 @@ services:
       - sonarqube
     restart: unless-stopped
     command: sleep infinity
-    network_mode: service:sonarqube
+    networks:
+      - sonarnet
 
   sonarqube:
     image: sonarqube:lts-community
@@ -40,12 +40,43 @@ services:
     networks:
       - sonarnet
 
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      RABBITMQ_DEFAULT_USER: kalo
+      RABBITMQ_DEFAULT_PASS: kalo
+    configs:
+      - source: rabbitmq-plugins
+        target: /etc/rabbitmq/enabled_plugins
+    volumes:
+      - rabbitmq-lib:/var/lib/rabbitmq/
+      - rabbitmq-log:/var/log/rabbitmq
+    networks:
+      - sonarnet
+
+configs:
+  rabbitmq-plugins:
+    content: "[rabbitmq_management]."
+
 networks:
   sonarnet:
     driver: bridge
 
 volumes:
+  rabbitmq-lib:
+    driver: local
+  rabbitmq-log:
+    driver: local
   sonarqube_conf:
+    driver: local
   sonarqube_data:
+    driver: local
   sonarqube_extensions:
+    driver: local
   sonarqube_bundled-plugins:
+    driver: local

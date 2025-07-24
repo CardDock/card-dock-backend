@@ -4,12 +4,16 @@ WORKDIR /usr/src/app
 # Establece el entorno de desarrollo
 ENV NODE_ENV=development
 
-# Instala dependencias completas (incluye devDependencies)
-# COPY package.json pnpm-lock.yaml ./
+# Copia proyecto
 COPY . .
 
 # Instala pnpm
 RUN npm install -g pnpm
+
+# Instala el CLI de NestJS globalmente
+RUN npm install -g @nestjs/cli
+
+# Instala las dependencias
 RUN pnpm install
 
 # Genera los archivos de Prisma
@@ -19,4 +23,4 @@ RUN pnpx prisma generate
 EXPOSE 3000
 
 # Corre el servidor en modo desarrollo
-CMD ["pnpm", "start:dev"]
+#CMD ["pnpm", "start:dev"]
