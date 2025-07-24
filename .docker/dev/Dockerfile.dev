@@ -1,0 +1,26 @@
+FROM node:lts
+WORKDIR /usr/src/app
+
+# Establece el entorno de desarrollo
+ENV NODE_ENV=development
+
+# Copia proyecto
+COPY . .
+
+# Instala pnpm
+RUN npm install -g pnpm
+
+# Instala el CLI de NestJS globalmente
+RUN npm install -g @nestjs/cli
+
+# Instala las dependencias
+RUN pnpm install
+
+# Genera los archivos de Prisma
+RUN pnpx prisma generate
+
+# Expone el puerto
+EXPOSE 3000
+
+# Corre el servidor en modo desarrollo
+#CMD ["pnpm", "start:dev"]

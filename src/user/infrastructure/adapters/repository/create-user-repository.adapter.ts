@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DataBaseConnectService } from '@src/core/data-base/infrastructure/services/data-base-connect.service';
-import { UserEntity } from '@src/core/user/domain/entity/user.entity';
-import { UserRepositoryPort } from '@src/core/user/domain/ports/user-repository.port';
+import { UserEntity } from '@src/user/domain/entity/user.entity';
+import { UserRepositoryPort } from '@src/user/domain/ports/user-repository.port';
 
 @Injectable()
 export class CreateUserRepositoryAdapter implements UserRepositoryPort {

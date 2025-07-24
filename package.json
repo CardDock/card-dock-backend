@@ -26,7 +26,8 @@
 		"prisma:migrate-only": "pnpm prisma:migrate -- --create-only",
 		"prisma:push": "pnpx prisma db push",
 		"prisma:seed": "pnpx tsx prisma/seed/seed.ts",
-		"prisma:dev": "pnpm prisma:push && pnpm prisma:seed"
+		"prisma:dev": "pnpm prisma:push && pnpm prisma:seed",
+		"sonar": "sonar-scanner"
 	},
 	"dependencies": {
 		"@nestjs/common": "^10.0.0",
@@ -79,6 +80,8 @@
 		"tsconfig-paths": "^4.2.0",
 		"tsx": "^4.19.2",
 		"typescript": "^5.1.3",
-		"typescript-eslint": "^8.11.0"
-	}
+		"typescript-eslint": "^8.11.0",
+		"sonarqube-scanner": "^4.2.6"
+	},
+	"packageManager": "pnpm@10.4.1+sha512.c753b6c3ad7afa13af388fa6d808035a008e30ea9993f58c6663e2bc5ff21679aa834db094987129aa4d488b86df57f7b634981b2f827cdcacc698cc0cfb88af"
 }

@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Profile, Strategy } from 'passport-google-oauth2';
-import { CreateUserApplicationService } from '@src/core/user/application/create-user-application.service';
-import { CreateUserDto } from '@src/core/user/application/dtos/create-user.dto';
 import { GoogleAuthConfig } from '../constants/googleAuthConfig';
+import { GoogleValidatePort } from '@src/oauth2-provider/application/ports/google-validate.port';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 	constructor(
-		private readonly createUserApplicationService: CreateUserApplicationService,
+		@Inject('GoogleValidatePort')
+		private readonly googleValidateAplicationService: GoogleValidatePort,
 	) {
 		super(GoogleAuthConfig.googleAuthStrategy());
 	}
@@ -19,37 +19,9 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 		profile: Profile,
 		done: (err: unknown, user: unknown, info?: unknown) => void,
 	): Promise<any> {
-		const { email, displayName, picture } = profile;
+		const user =
+			this.googleValidateAplicationService.handleGoogleValidate(profile);
 
-		const existingUser = await this.createUserApplicationService.findByEmail(
-			profile.email,
-		);
-
-		if (existingUser) {
-			done(null, existingUser);
-			return null;
-		}
-
-		const payload = {
-			email: email,
-			name: displayName,
-			picture: picture,
-		};
-
-		this.createNewUserGoogle(payload);
-
-		done(null, payload);
-
-		return payload;
-	}
-
-	private createNewUserGoogle(payload) {
-		const userCreate: CreateUserDto = {
-			name: payload.name,
-			email: payload.email,
-			picture: payload.picture,
-		};
-
-		return this.createUserApplicationService.create(userCreate);
+		done(null, user);
 	}
 }

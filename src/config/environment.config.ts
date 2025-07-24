@@ -8,4 +8,8 @@ export class EnvironmentConfig {
 	public static getPort(): number {
 		return Number(process.env.PORT || 3000);
 	}
+
+	public static getJwtSecret(): string {
+		return process.env.JWT_SECRET || 'secret';
+	}
 }

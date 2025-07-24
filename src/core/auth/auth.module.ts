@@ -1,30 +1,31 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-// import { EmailFindService } from 'src/core/auth/application/services/email-find.service';
-import { GoogleAuthController } from '../../oauth2-provider/infrastructure/controller/google-auth.controller';
 import { SingJwtController } from './infrastructure/controllers/sing-jwt.controller';
-import { JwtKey } from './infrastructure/constants/jwt-key';
 import { JwtStrategy } from './infrastructure/adapters/strategys/jwt.strategy';
-import { EmailFindController } from './infrastructure/controllers/emailfind.controller';
 import { PassportModule } from '@nestjs/passport/dist';
 import { AuthAplicationService } from './application/services/auth-aplication.service';
 import { TokenManagerAdapter } from './infrastructure/adapters/auth.adapter';
 import { AuthRepositoryAdapter } from './infrastructure/adapters/repository/auth-repository.adapter';
-import { UserModule } from '../user/user.module';
+import { UserModule } from '@src/user/user.module';
+import { EnvironmentConfig } from '@src/config/environment.config';
+import {
+	AUTH_REPOSITORY_PORT,
+	TOKEN_MANAGER_PORT,
+} from './application/common/tokens';
 
 @Module({
 	imports: [
 		PassportModule,
 		UserModule,
 		JwtModule.register({
-			secret: JwtKey.secret,
+			secret: EnvironmentConfig.getJwtSecret(),
 			signOptions: { expiresIn: '60m' },
 		}),
 	],
-	controllers: [GoogleAuthController, SingJwtController, EmailFindController],
+	controllers: [SingJwtController],
 	providers: [
-		{ provide: 'AuthRepositoryPort', useClass: AuthRepositoryAdapter },
-		{ provide: 'TokenManagerPort', useClass: TokenManagerAdapter },
+		{ provide: TOKEN_MANAGER_PORT, useClass: TokenManagerAdapter },
+		{ provide: AUTH_REPOSITORY_PORT, useClass: AuthRepositoryAdapter },
 		JwtStrategy,
 		AuthAplicationService,
 	],

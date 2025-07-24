@@ -1,5 +1,5 @@
-import { env } from 'process';
+import { EnvironmentConfig } from '@src/config/environment.config';
 
 export const JwtKey = {
-	secret: env.JWT_SECRET,
+	secret: EnvironmentConfig.getJwtSecret(),
 };

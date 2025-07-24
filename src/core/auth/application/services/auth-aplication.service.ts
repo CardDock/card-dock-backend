@@ -1,29 +1,25 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { AuthEntity } from '../../domain/entitys/auth/auth.entity';
-import { AuthUsername } from '../../domain/entitys/auth/value-object/auth-name';
-import { AuthPassword } from '../../domain/entitys/auth/value-object/auth-password';
 import { AuthDto } from '../dtos/auth.dto';
 import { TokenManagerPort } from '../ports/token-manager.port';
 import { AuthRepositoryPort } from '../../domain/ports/auth-repository-port';
+import { AUTH_REPOSITORY_PORT, TOKEN_MANAGER_PORT } from '../common/tokens';
 
 @Injectable()
 export class AuthAplicationService {
 	constructor(
-		@Inject('TokenManagerPort')
+		@Inject(TOKEN_MANAGER_PORT)
 		private readonly tokenManager: TokenManagerPort,
-		@Inject('AuthRepositoryPort')
+		@Inject(AUTH_REPOSITORY_PORT)
 		private readonly authRepository: AuthRepositoryPort,
 	) {}
 
-	loginWithCredentials(authDto: AuthDto): { access_token: any } {
-		const auth = AuthEntity.create(
-			new AuthUsername(authDto.username),
-			new AuthPassword(authDto.password),
-		);
+	async loginWithCredentials(
+		authDto: AuthDto,
+	): Promise<{ access_token: unknown }> {
+		const auth = AuthEntity.create(authDto.username, authDto.password);
 
-		if (!this.validateAuthCredentials(auth)) {
-			throw new Error('Credenciales incorrectas');
-		}
+		await this.validateAuthCredentials(auth);
 
 		return {
 			access_token: this.tokenManager.signToken({
@@ -33,9 +29,9 @@ export class AuthAplicationService {
 		};
 	}
 
-	private async validateAuthCredentials(auth: AuthEntity): Promise<boolean> {
+	private async validateAuthCredentials(auth: AuthEntity): Promise<void> {
 		const user = await this.authRepository.findByCredencial(auth);
 
-		return user ? true : false;
+		if (!user) throw new Error('Credenciales incorrectas');
 	}
 }
