@@ -1,10 +1,10 @@
 {
 	"name": "card-dock-backend",
 	"version": "0.0.1",
-	"description": "",
-	"author": "",
+	"description": "Servicio principal de CardDock",
+	"author": "Nelson R Graña",
 	"private": true,
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"scripts": {
 		"postinstall": "pnpm husky init",
 		"build": "nest build",
@@ -13,7 +13,7 @@
 		"start:dev": "nest start --watch",
 		"start:debug": "nest start --debug --watch",
 		"start:prod": "node dist/main",
-		"lint": "eslint .",
+		"lint": "pnpx eslint .",
 		"lint:fix": "eslint . --fix",
 		"test": "pnpm test:unit && pnpm test:e2e",
 		"test:e2e": "jest --config ./jest-e2e.config.json",
@@ -26,7 +26,6 @@
 		"prisma:migrate-only": "pnpm prisma:migrate -- --create-only",
 		"prisma:push": "pnpx prisma db push",
 		"prisma:seed": "pnpx tsx prisma/seed/seed.ts",
-		"prisma:dev": "pnpm prisma:push && pnpm prisma:seed",
 		"sonar": "sonar-scanner"
 	},
 	"dependencies": {
@@ -43,9 +42,6 @@
 		"passport-jwt": "^4.0.1",
 		"reflect-metadata": "^0.2.0",
 		"rxjs": "^7.8.1"
-	},
-	"prisma": {
-		"seed": "pnpx tsx prisma/seed/seed.ts"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^19.5.0",
