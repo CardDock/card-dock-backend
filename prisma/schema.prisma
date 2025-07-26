@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,325 +7,34 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// * Usuario y autenticacion
-model User {
-  id               Int                  @id @default(autoincrement())
-  name             String
-  email            String               @unique
-  role             Role                 @default(USER)
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
-  lastLogin        DateTime?
-  isActive         Boolean              @default(true)
-  verified         Boolean              @default(false)
-  notifications    UserNotifications[]
-  authProviders    AuthProvider[]
-  UserProfile      UserProfile[]
-  profileId        Int?
-  UserPreferences  UserPreferences[]
-  UserCollection   CardUserCollection[]
-  Deck             Deck[]
-  UserWishList     WantedCard[]
-  CardUserFavorite CardUserFavorite[]
-  CardDeckFavorite DeckUserFavorite[]
-  TradeInterest    TradeInterest[]
-  sendMessages     Messages[]           @relation("sent_messages")
-  receivedMessages Messages[]           @relation("received_messages")
+model cards_yugioh {
+  id              String   @id @default(uuid()) @db.Uuid
+  original_name   String
+  id_external_api String
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
 
-  @@index([email])
+  cards_yugioh_user cards_yugioh_user[] @relation("CardsInstances")
 }
 
-model AuthProvider {
-  id           Int      @id @default(autoincrement())
-  provider     Provider
-  passwordHash String?
-  providerId   String //identificador del usuario proporcionado por el proveedor de autenticación
-  userId       Int?
-  user         User?    @relation(fields: [userId], references: [id])
+model cards_yugioh_user {
+  id             String   @id @default(uuid()) @db.Uuid
+  id_user        String   @db.Uuid
+  id_card_yugioh String   @db.Uuid
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
 
-  @@index([providerId])
+  user user         @relation(name: "CardsUser", fields: [id_user], references: [id])
+  card cards_yugioh @relation(name: "CardsInstances", fields: [id_card_yugioh], references: [id])
 }
 
-// * Preferencias de usuario
-model UserPreferences {
-  id            Int      @id @default(autoincrement())
-  language      Language @default(SPANISH)
-  notifications Boolean  @default(true)
-  userId        Int
-  user          User     @relation(fields: [userId], references: [id])
+model user {
+  id             String   @id @default(uuid()) @db.Uuid
+  id_driver_user String
+  email          String?
+  username       String?
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  cards_yugioh_user cards_yugioh_user[] @relation("CardsUser")
 }
-
-// ==== Notificaciones de usuario ====
-model UserNotifications {
-  id        Int              @id @default(autoincrement())
-  userId    Int
-  content   String
-  type      NotificationType
-  isRead    Boolean          @default(false)
-  createdAt DateTime         @default(now())
-  User      User             @relation(fields: [userId], references: [id])
-}
-
-// * Perfil de usuario
-model UserProfile {
-  id            Int           @id @default(autoincrement())
-  userId        Int           @unique
-  countryId     Int?
-  cityId        Int?
-  birthdate     DateTime?
-  bio           String?
-  portraitUser  String?
-  landscapeUser String?
-  contactEmail  String?
-  contactPhone  String?
-  UserAddress   UserAddress[]
-  user          User          @relation(fields: [userId], references: [id])
-}
-
-// * Direcciones de usuario
-model UserAddress {
-  id            Int          @id @default(autoincrement())
-  street        String?
-  dirComplement String?
-  state         String?
-  postalCode    String?
-  profileId     Int
-  countryId     Int
-  cityId        Int
-  userProfileId Int?
-  country       Country      @relation(fields: [countryId], references: [id])
-  city          City         @relation(fields: [cityId], references: [id])
-  UserProfile   UserProfile? @relation(fields: [userProfileId], references: [id])
-}
-
-model Country {
-  id          Int           @id @default(autoincrement())
-  code        String        @unique
-  name        String
-  cities      City[]
-  isActive    Boolean       @default(true)
-  UserAddress UserAddress[]
-}
-
-model City {
-  id        Int           @id @default(autoincrement())
-  name      String
-  countryId Int
-  isActive  Boolean       @default(true)
-  Address   UserAddress[]
-  country   Country       @relation(fields: [countryId], references: [id])
-}
-
-// * Info externa de las cartas (cache)
-model Card {
-  id           Int                  @id @default(autoincrement())
-  set          CardSet
-  apiId        String               @unique
-  name         String?
-  apiData      Json?
-  createdAt    DateTime             @default(now())
-  updatedAt    DateTime             @updatedAt
-  collections  CardUserCollection[]
-  UserWishList WantedCard[]
-
-  @@index([set, apiId, name, apiData])
-}
-
-// * Cartas de un usuario
-model CardUserCollection {
-  id                   Int                        @id @default(autoincrement())
-  cardId               Int
-  userId               Int
-  CardUserProperties   CardUserProperties[]
-  createAt             DateTime                   @default(now())
-  updateAt             DateTime                   @updatedAt
-  deckId               Int? // Este campo será opcional para cartas sueltas
-  TradeCard            TradeCard[]
-  photos               CardRealPhoto[]
-  CardUserFavorite     CardUserFavorite[]
-  TradeInterest        TradeInterest[]
-  sentTransactions     TradeTransactionComplete[] @relation("SentTransactions")
-  receivedTransactions TradeTransactionComplete[] @relation("ReceivedTransactions")
-  Card                 Card                       @relation(fields: [cardId], references: [id])
-  User                 User                       @relation(fields: [userId], references: [id])
-  Deck                 Deck?                      @relation(fields: [deckId], references: [id])
-
-  @@index([cardId, userId])
-}
-
-model CardRealPhoto {
-  id               Int                 @id @default(autoincrement())
-  photoUrl         String
-  description      String?
-  uploadedAt       DateTime            @default(now())
-  updateAt         DateTime            @updatedAt
-  userCollectionId Int?
-  UserCollection   CardUserCollection? @relation(fields: [userCollectionId], references: [id])
-
-  @@index([photoUrl, userCollectionId])
-}
-
-model CardUserProperties {
-  id               Int                 @id @default(autoincrement())
-  condition        CardCondition
-  rarity           String?
-  isPublic         Boolean             @default(true)
-  userCollectionId Int
-  updateAt         DateTime            @updatedAt
-  UserCollection   CardUserCollection? @relation(fields: [userCollectionId], references: [id])
-}
-
-model Deck {
-  id               Int                  @id @default(autoincrement())
-  name             String
-  description      String?
-  userId           Int
-  isPublic         Boolean              @default(true)
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @updatedAt
-  UserCollection   CardUserCollection[]
-  CardDeckFavorite DeckUserFavorite[]
-  user             User                 @relation(fields: [userId], references: [id])
-
-  @@index([name, userId, isPublic])
-}
-
-// * Cartas que el usuario necesita
-model WantedCard {
-  id        Int            @id @default(autoincrement())
-  cardId    Int
-  userId    Int
-  condition CardCondition?
-  minRating String
-  createAt  DateTime       @default(now())
-  updateAt  DateTime       @updatedAt
-  User      User           @relation(fields: [userId], references: [id])
-  Card      Card           @relation(fields: [cardId], references: [id])
-}
-
-// * Cartas que el usuario tiene para cambiar
-model TradeCard {
-  id               Int                @id @default(autoincrement())
-  userId           Int
-  userCollectionId Int
-  condition        CardCondition?
-  minRating        String?
-  createAt         DateTime           @default(now())
-  updateAt         DateTime           @updatedAt
-  collectionId     CardUserCollection @relation(fields: [userCollectionId], references: [id])
-}
-
-// * Historial de actividad
-model CardUserFavorite {
-  id                   Int                @id @default(autoincrement())
-  userId               Int
-  CardUserCollectionId Int
-  createAt             DateTime           @default(now())
-  updateAt             DateTime           @updatedAt
-  User                 User               @relation(fields: [userId], references: [id])
-  CardUserCollection   CardUserCollection @relation(fields: [CardUserCollectionId], references: [id])
-}
-
-model DeckUserFavorite {
-  id       Int      @id @default(autoincrement())
-  userId   Int
-  deckId   Int
-  createAt DateTime @default(now())
-  updateAt DateTime @updatedAt
-  User     User     @relation(fields: [userId], references: [id])
-  Deck     Deck     @relation(fields: [deckId], references: [id])
-}
-
-// * Transacciones de intercambio
-
-model TradeTransactionComplete {
-  id         Int                @id @default(autoincrement())
-  sendCardId Int //carta que el usuario ofrece
-  getCardId  Int //carta que el usuario recibe
-  status     TradeStatus        @default(PENDING)
-  createAt   DateTime           @default(now())
-  updateAt   DateTime           @updatedAt
-  sendCard   CardUserCollection @relation("SentTransactions", fields: [sendCardId], references: [id])
-  getCard    CardUserCollection @relation("ReceivedTransactions", fields: [getCardId], references: [id])
-}
-
-model TradeInterest {
-  id                 Int                @id @default(autoincrement())
-  interestUserId     Int
-  interestCardId     Int
-  tradeStatus        TradeStatus        @default(PENDING)
-  createAt           DateTime           @default(now())
-  updateAt           DateTime           @updatedAt
-  User               User               @relation(fields: [interestUserId], references: [id])
-  CardUserCollection CardUserCollection @relation(fields: [interestCardId], references: [id])
-}
-
-// * Sistema de mensajes
-
-model Messages {
-  id         Int       @id @default(autoincrement())
-  senderId   Int // Usuario que envía el mensaje
-  receiverId Int // Usuario que recibe el mensaje
-  content    String // Contenido del mensaje
-  sentAt     DateTime  @default(now())
-  readAt     DateTime? // Fecha en que se leyó el mensaje, si aplica
-  sender     User      @relation("sent_messages", fields: [senderId], references: [id])
-  receiver   User      @relation("received_messages", fields: [receiverId], references: [id])
-}
-
-// * -------------
-// * Definir enums
-// * -------------
-
-enum TradeStatus {
-  PENDING
-  ACCEPTED
-  REJECTED
-  CANCELED
-}
-
-enum Provider {
-  GOOGLE
-  FACEBOOK
-}
-
-enum Role {
-  USER
-  PROFESSIONAL
-  ADMIN
-}
-
-enum Language {
-  SPANISH
-  ENGLISH
-}
-
-enum NotificationType {
-  INFO // Mensaje informativo
-  ALERT // Mensaje de alerta
-  REMINDER // Recordatorio
-}
-
-enum CardSet {
-  MAGIC
-  POKEMON
-  YUGIOH
-  LORCANA
-  DRAGON_BALL_SUPER
-  ONE_PIECE
-  DIGIMONC
-  STAR_WARS_DESTINY
-  STAR_WARS_UNLIMITED
-}
-
-enum CardCondition {
-  MINT
-  NEAR_MINT
-  EXCELLENT
-  GOOD
-  LIGHT_PLAYED
-  PLAYED
-  POOR
-}
-
-// * Fin Enum
