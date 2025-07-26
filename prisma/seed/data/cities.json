@@ -1,6 +1,0 @@
-[
-  { "name": "New York", "countryId": 1 },
-  { "name": "Madrid", "countryId": 2 },
-  { "name": "Mexico City", "countryId": 3 },
-  { "name": "Buenos Aires", "countryId": 4 }
-]
